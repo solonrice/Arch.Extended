@@ -51,7 +51,7 @@ public static class Hookersxtensions
             
             // Remove weird chars to also support value tuples flawlessly, otherwhise they are listed like (World world, int int) in code which destroys everything
             var eventType = eventReceivingMethod.EventType.ToString();
-            eventType = eventType.Replace("(","").Replace(")","").Replace(".","_").Replace(",","_").Replace(" ","");
+            eventType = eventType.ReplaceSpecials();
 
             sb.AppendLine($"EventBus.{containingSymbol.Name}_{methodName}_{eventType}.Add(this);");
         }
@@ -74,7 +74,7 @@ public static class Hookersxtensions
             
             // Remove weird chars to also support value tuples flawlessly, otherwhise they are listed like (World world, int int) in code which destroys everything
             var eventType = eventReceivingMethod.EventType.ToString();
-            eventType = eventType.Replace("(","").Replace(")","").Replace(".","_").Replace(",","_").Replace(" ","");
+            eventType = eventType.ReplaceSpecials();
             
             sb.AppendLine($"EventBus.{containingSymbol.Name}_{methodName}_{eventType}.Remove(this);");
         }
@@ -136,5 +136,15 @@ public static class Hookersxtensions
         {{callerMethods}}
         """;
         return sb.Append(template);
+    }
+    
+    /// <summary>
+    /// Replaces a invalid chars on a source name with safe ones for variable names.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    private static string? ReplaceSpecials(this string? source)
+    {
+        return source?.Replace("(", "").Replace(")", "").Replace(".", "_").Replace(",", "_").Replace(" ", "").Replace("<", "_").Replace(">", "_");
     }
 }
