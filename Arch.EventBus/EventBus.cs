@@ -146,7 +146,7 @@ public static class EventBusExtensions
             
             // Remove weird chars to also support value tuples flawlessly, otherwhise they are listed like (World world, int int) in code which destroys everything
             var eventType = callMethod.EventType.ToString();
-            eventType = eventType.Replace("(","").Replace(")","").Replace(".","_").Replace(",","_").Replace(" ","");
+            eventType = eventType.ReplaceSpecials();
             
             // If static, call directly... if non static, loop over the instances for this event and call them one by one.
             if (eventReceivingMethod.Static)
@@ -167,7 +167,7 @@ public static class EventBusExtensions
         }
         return sb;
     }
-    
+
     /// <summary>
     ///     Appends lists for a certain <see cref="Method"/> containing one list for each instance (non static) receiving a method.
     ///     <remarks>List&lt;SomeInstance&gt; SomeInstance_OnSomeEvent_EventType; ...</remarks>
@@ -184,7 +184,7 @@ public static class EventBusExtensions
             
             // Remove weird chars to also support value tuples flawlessly, otherwhise they are listed like (World world, int int) in code which destroys everything
             var eventType = callMethod.EventType.ToString();
-            eventType = eventType.Replace("(","").Replace(")","").Replace(".","_").Replace(",","_").Replace(" ","");
+            eventType = eventType.ReplaceSpecials();
             
             if (eventReceivingMethod.Static)
             {
@@ -215,5 +215,15 @@ public static class EventBusExtensions
         }
         """;
         return sb.Append(template);
+    }
+    
+    /// <summary>
+    /// Replaces a invalid chars on a source name with safe ones for variable names.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    private static string? ReplaceSpecials(this string? source)
+    {
+        return source?.Replace("(", "").Replace(")", "").Replace(".", "_").Replace(",", "_").Replace(" ", "").Replace("<", "_").Replace(">", "_");
     }
 }
